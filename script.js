@@ -100,22 +100,42 @@ const addButtonCard = function () {
 
 const saveBookLocalStorage = function (newBook) {
   let savedBooksCart = JSON.parse(localStorage.getItem("bookShoop")) || [];
+
   if (newBook) {
     savedBooksCart.push(newBook);
   }
+
   localStorage.setItem("bookShoop", JSON.stringify(savedBooksCart));
 
   const listaCarrello = document.getElementById("lista-carrello");
+
   listaCarrello.innerHTML = "";
-  savedBooksCart.forEach((book) => {
+
+  savedBooksCart.forEach((book, index) => {
     const li = document.createElement("li");
     li.classList.add("list-group-item");
-    li.innerHTML = `<p> ${book.title} - ${book.price} <i class="bi bi-trash3-fill deleteBook"></i> </p>`;
+
+    // Aggiungi correttamente l'attributo data-index sull'icona in modo da andare poi a ricercare l'indice
+
+    li.innerHTML = `<p> ${book.title} - ${book.price} <i class="bi bi-trash3-fill  text-danger deleteBook" data-index="${index}"></i> </p>`;
     listaCarrello.appendChild(li);
   });
+
   let deleteBook = document.querySelectorAll(".deleteBook");
+
   deleteBook.forEach((cestino) => {
-    cestino.addEventListener("click", () => {});
+    cestino.addEventListener("click", (event) => {
+      const bookIndex = event.target.getAttribute("data-index");
+
+      // Rimuovi il libro dall'array salvato nel localStorage
+      savedBooksCart.splice(bookIndex, 1);
+
+      // Aggiorna il localStorage dopo la rimozione
+      localStorage.setItem("bookShoop", JSON.stringify(savedBooksCart));
+
+      // Ricarica la lista del carrello per riflettere i cambiamenti
+      saveBookLocalStorage();
+    });
   });
 };
 saveBookLocalStorage();
