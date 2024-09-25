@@ -22,10 +22,9 @@ const getbooks = function () {
     .then((books) => {
       books.forEach((book) => {
         arrayBooks.push(book);
-        cardBooks();
-        buttonRemoveCard();
-        addButtonCard();
       });
+      cardBooks();
+      buttonRemoveCard();
     })
     .catch((error) => {
       console.log(error);
@@ -37,15 +36,17 @@ getbooks();
 
 const cardBooks = function () {
   const rowCard = document.getElementById("rowCard");
-  const newCol = document.createElement("div");
+
   arrayBooks.forEach((book) => {
+    const newCol = document.createElement("div");
+
     newCol.classList.add("col", "col-12", "col-md-6", "col-lg-3");
     newCol.innerHTML = `
-              <div class="card mt-3 shadow">
+              <div class="card mt-3 shadow ">
                 <img
                   src="${book.img}"
                   height ="500"
-                  class="card-img-top w-100  object-fit-cover "
+                  class="card-img-top w-100   "
                   alt="book"
                 />
                 <div class="card-body">
@@ -59,6 +60,7 @@ const cardBooks = function () {
           `;
     rowCard.appendChild(newCol);
   });
+  addButtonCard();
 };
 
 const buttonRemoveCard = function () {
@@ -72,17 +74,48 @@ const buttonRemoveCard = function () {
     });
   });
 };
-const arrayCarrello = [];
+
 const addButtonCard = function () {
   let btnAddCarrello = document.querySelectorAll(".addCarrello");
-  let card = document.querySelectorAll(".card");
-  console.log(card);
 
   btnAddCarrello.forEach((btn) => {
     btn.addEventListener("click", () => {
-      arrayCarrello.push(card);
+      // Utilizza l'indice corrente (index) per ottenere il titolo della card associata. Usa textContent per ottenere il testo del titolo all'interno dell'elemento HTML
+      let colCard = btn.closest(".col");
+      let title = colCard.querySelector(".card-title").innerText;
+      let price = colCard.querySelector(".card-text").innerText;
+
+      class BooksCart {
+        constructor(_title, _price) {
+          this.title = _title;
+          this.price = _price;
+        }
+      }
+
+      let book = new BooksCart(title, price);
+      saveBookLocalStorage(book);
     });
   });
 };
 
-console.log(arrayCarrello);
+const saveBookLocalStorage = function (newBook) {
+  let savedBooksCart = JSON.parse(localStorage.getItem("bookShoop")) || [];
+  if (newBook) {
+    savedBooksCart.push(newBook);
+  }
+  localStorage.setItem("bookShoop", JSON.stringify(savedBooksCart));
+
+  const listaCarrello = document.getElementById("lista-carrello");
+  listaCarrello.innerHTML = "";
+  savedBooksCart.forEach((book) => {
+    const li = document.createElement("li");
+    li.classList.add("list-group-item");
+    li.innerHTML = `<p> ${book.title} - ${book.price} <i class="bi bi-trash3-fill deleteBook"></i> </p>`;
+    listaCarrello.appendChild(li);
+  });
+  let deleteBook = document.querySelectorAll(".deleteBook");
+  deleteBook.forEach((cestino) => {
+    cestino.addEventListener("click", () => {});
+  });
+};
+saveBookLocalStorage();
