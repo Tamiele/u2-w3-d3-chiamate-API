@@ -44,7 +44,8 @@ const cardBooks = function () {
               <div class="card mt-3 shadow">
                 <img
                   src="${book.img}"
-                  class="card-img-top w-100 "
+                  height ="500"
+                  class="card-img-top w-100  object-fit-cover "
                   alt="book"
                 />
                 <div class="card-body">
